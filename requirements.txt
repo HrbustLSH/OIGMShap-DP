@@ -1,0 +1,31 @@
+tqdm
+rich
+ninja
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+opencv-python
+imageio
+imageio-ffmpeg
+omegaconf
+
+torch
+einops
+plyfile
+pygltflib
+dearpygui
+# for stable-diffusion
+huggingface_hub
+diffusers == 0.21.4 # fix loading zero123 temporarily
+accelerate
+transformers
+
+
+xatlas
+trimesh
+PyMCubes
+pymeshlab
+rembg[gpu,cli]
+gradio

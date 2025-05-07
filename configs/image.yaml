@@ -1,0 +1,56 @@
+### Input
+# input rgba image path 
+
+input: 
+# input text prompt 
+prompt:
+mesh:
+elevation: 0
+ref_size: 256
+density_thresh: 1
+
+### Output
+# outdir: logs
+outdir: 
+mesh_format: obj
+save_path: ???
+
+
+### Training
+# guidance loss weights (0 to disable)
+lambda_sd: 0
+mvdream: False
+lambda_zero123: 1
+batch_size: 1
+iters: 500
+iters_refine: 50
+radius: 2
+fovy: 49.1 
+load:
+train_geo: False
+invert_bg_prob: 0.5
+
+gui: False
+force_cuda_rast: False
+H: 800
+W: 800
+
+pior_path: 
+num_pts: 5000
+sh_degree: 0
+position_lr_init: 0.001
+position_lr_final: 0.00002
+position_lr_delay_mult: 0.02
+position_lr_max_steps: 500
+feature_lr: 0.01
+opacity_lr: 0.05
+scaling_lr: 0.005
+rotation_lr: 0.005
+percent_dense: 0.1
+density_start_iter: 100
+density_end_iter: 3000
+densification_interval: 100
+opacity_reset_interval: 700
+densify_grad_threshold: 0.5
+geom_lr: 0.0001
+texture_lr: 0.2

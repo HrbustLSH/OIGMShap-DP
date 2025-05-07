@@ -1,0 +1,45 @@
+ninja_required_version = 1.3
+cxx = c++
+nvcc = /repository7403/liushan/conda_envs/tiger/bin/nvcc
+
+cflags = -DTORCH_EXTENSION_NAME=pointops_cuda -DTORCH_API_INCLUDE_EXTENSION_H -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/torch/csrc/api/include -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/TH -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/THC -isystem /repository7403/liushan/conda_envs/tiger/include -isystem /repository7403/liushan/conda_envs/tiger/include/python3.6m -D_GLIBCXX_USE_CXX11_ABI=0 -fPIC -std=c++14
+post_cflags = 
+cuda_cflags = -DTORCH_EXTENSION_NAME=pointops_cuda -DTORCH_API_INCLUDE_EXTENSION_H -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/torch/csrc/api/include -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/TH -isystem /repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/include/THC -isystem /repository7403/liushan/conda_envs/tiger/include -isystem /repository7403/liushan/conda_envs/tiger/include/python3.6m -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_86,code=sm_86 --compiler-options '-fPIC' -std=c++14
+cuda_post_cflags = 
+ldflags = -shared -L/repository7403/liushan/conda_envs/tiger/lib/python3.6/site-packages/torch/lib -lc10 -lc10_cuda -ltorch_cpu -ltorch_cuda -ltorch -ltorch_python -L/repository7403/liushan/conda_envs/tiger/lib64 -lcudart
+
+rule compile
+  command = $cxx -MMD -MF $out.d $cflags -c $in -o $out $post_cflags
+  depfile = $out.d
+  deps = gcc
+
+rule cuda_compile
+  command = $nvcc $cuda_cflags -c $in -o $out $cuda_post_cflags
+
+rule link
+  command = $cxx $in $ldflags -o $out
+
+build pointops_api.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/pointops_api.cpp
+build ballquery_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/ballquery/ballquery_cuda.cpp
+build ballquery_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/ballquery/ballquery_cuda_kernel.cu
+build knnquery_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/knnquery/knnquery_cuda.cpp
+build knnquery_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/knnquery/knnquery_cuda_kernel.cu
+build knnquery_heap_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/knnquery_heap/knnquery_heap_cuda.cpp
+build knnquery_heap_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/knnquery_heap/knnquery_heap_cuda_kernel.cu
+build grouping_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/grouping/grouping_cuda.cpp
+build grouping_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/grouping/grouping_cuda_kernel.cu
+build grouping_int_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/grouping_int/grouping_int_cuda.cpp
+build grouping_int_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/grouping_int/grouping_int_cuda_kernel.cu
+build interpolation_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/interpolation/interpolation_cuda.cpp
+build interpolation_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/interpolation/interpolation_cuda_kernel.cu
+build sampling_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/sampling/sampling_cuda.cpp
+build sampling_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/sampling/sampling_cuda_kernel.cu
+build labelstat_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/labelstat/labelstat_cuda.cpp
+build labelstat_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/labelstat/labelstat_cuda_kernel.cu
+build featuredistribute_cuda.o: compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/featuredistribute/featuredistribute_cuda.cpp
+build featuredistribute_cuda_kernel.cuda.o: cuda_compile /repository7403/liushan/text-to-3D/RISurConv-main/pointops/src/featuredistribute/featuredistribute_cuda_kernel.cu
+
+build pointops_cuda.so: link pointops_api.o ballquery_cuda.o ballquery_cuda_kernel.cuda.o knnquery_cuda.o knnquery_cuda_kernel.cuda.o knnquery_heap_cuda.o knnquery_heap_cuda_kernel.cuda.o grouping_cuda.o grouping_cuda_kernel.cuda.o grouping_int_cuda.o grouping_int_cuda_kernel.cuda.o interpolation_cuda.o interpolation_cuda_kernel.cuda.o sampling_cuda.o sampling_cuda_kernel.cuda.o labelstat_cuda.o labelstat_cuda_kernel.cuda.o featuredistribute_cuda.o featuredistribute_cuda_kernel.cuda.o
+
+default pointops_cuda.so
+
