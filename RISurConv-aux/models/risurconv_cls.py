@@ -86,7 +86,7 @@ class get_model_aux(nn.Module):
                                    self.bn5,
                                    nn.LeakyReLU(negative_slope=0.2))
         
-        # 定义辅助分支的1x1卷积层
+        # 定义辅助分支的卷积层
         self.aux_conv = nn.Conv1d(64, args.emb_dims, kernel_size=1, bias=False)
         self.aux_bn = nn.BatchNorm1d(args.emb_dims)
         self.aux_relu = nn.ReLU()
@@ -112,7 +112,7 @@ class get_model_aux(nn.Module):
         x = self.conv2(x)
         x2 = x.max(dim=-1, keepdim=False)[0]
        
-        # 在第一个卷积层之后添加辅助分支
+        # 在卷积层之后添加辅助分支
         #if self.training :
         aux_features = self.aux_relu(self.aux_bn(self.aux_conv(x2))) 
         aux_features = F.adaptive_avg_pool1d(aux_features, 1).view(batch_size, -1) #10,1024
@@ -135,7 +135,6 @@ class get_model_aux(nn.Module):
         x = torch.cat((x1, x2), 1) #10,2048
         
         # print(f'aux_features.shape:{aux_features.shape}')
-        # 将辅助分支的输出与主模型的输出拼接
         x = torch.cat((x1, aux_features), 1) #11,3072 
         x = F.leaky_relu(self.bn6(self.linear1(x)), negative_slope=0.2)
         x = self.dp1(x)
